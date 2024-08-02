@@ -9,3 +9,24 @@ html, body{
     min-height: 50px;
     margin-bottom: 5px;
 }
+
+.card img{
+    max-height: 230px;
+    object-fit: cover;
+}
+
+/*Etiquetas custom*/
+@media (min-width: 768px) {
+    .px-md-6 {
+      padding-right: 5rem !important;
+      padding-left: 5rem !important;
+    }
+}
+
+/*Etiquetas custom*/
+@media (min-width: 992px) {
+    .px-lg-6 {
+      padding-right: 8rem !important;
+      padding-left: 8rem !important;
+    }
+}
