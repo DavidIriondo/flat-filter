@@ -21,15 +21,19 @@
            </div>
         </div>
         <!--Contiene todos los pisos-->
-        <div class="row row-cols-1 row-cols-md-2 g-4 px-lg-6">
+        <div class="row row-cols-1 row-cols-md-2 g-4 px-lg-6 pb-2">
             {% for flat in flat_list %}
             <div class="col">
                 <div class="card">
-                    <img src="{{ url_for('static',filename='resources/image-not-found.png') }}" class="card-img-top" alt="...">
+                    <img src="{{flat.image_link}}" class="card-img-top" alt="...">
                     <div class="card-body">
                     <h5 class="card-title">{{flat.name}}</h5>
-                    <p class="card-text">Precio: {{flat.price}} &nbsp Telefono: {{flat.phone_number}}</p>
-                    <p class="card-text">Ir a la pagina: <a href="{{flat.original_link}}">Pincha aqui</a></p>
+                    <p class="card-text">
+                        Precio: {{flat.price}}<br>
+                        Telefono: {{flat.phone_number}}<br>
+                        Ir a la pagina: <a href="{{flat.original_link}}">Pincha aqui</a><br>
+                        Pagina de origen: {{flat.origin}}
+                    </p>
                     <p class="card-text">{{flat.description}}</p>
                     </div>
                 </div>

@@ -6,4 +6,7 @@ class ScrapyBase(ABC):
     def start_scrapy_process(self):
         pass
 
+    @abstractmethod
+    def retrieve_elements(self, html_element):
+        pass
 
