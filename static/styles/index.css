@@ -15,6 +15,10 @@ html, body{
     object-fit: cover;
 }
 
+.text-bold{
+    font-weight: 600;
+}
+
 /*Etiquetas custom*/
 @media (min-width: 768px) {
     .px-md-6 {

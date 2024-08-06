@@ -1,6 +1,7 @@
 import re
 import html
 import json
+from urllib.parse import urlencode
 
 from bs4 import BeautifulSoup
 import requests
@@ -11,14 +12,149 @@ from dtos.flat import Flat
 
 class Idealista(ScrapyBase):
 
-    def start_scrapy_process(self):
+    def start_scrapy_process(self, filters, rules):
         print("Iniciando proceso de scrapy para Idealista")
 
-        price_param = "900"
-        # URL de la solicitud
-        url = f'https://www.idealista.com/ajax/listingcontroller/listingajax.ajax?locationUri=fuengirola-malaga&typology=1&operation=2&freeText=&adfilter_pricemin=default&adfilter_price={price_param}&adfilter_area=default&adfilter_areamax=default&adfilter_amenity=default&adfilter_apartment=&adfilter_rooms_0=&adfilter_rooms_1=&adfilter_rooms_2=2&adfilter_rooms_3=3&adfilter_rooms_4_more=4&adfilter_baths_1=&adfilter_baths_2=&adfilter_baths_3=&adfilter_newconstruction=&adfilter_goodcondition=&adfilter_toberestored=&adfilter_housingpetsallowed=&adfilter_hasairconditioning=&adfilter_wardrobes=&adfilter_lift=&adfilter_flatlocation=&adfilter_parkingspace=&adfilter_garden=&adfilter_swimmingpool=&adfilter_hasterrace=&adfilter_boxroom=&adfilter_accessibleHousing=&adfilter_seaviews=&adfilter_luxury=&adfilter_top_floor=&adfilter_intermediate_floor=&adfilter_ground_floor=&adfilter_hasplan=&adfilter_digitalvisit=&adfilter_agencyisabank=&adfilter_published=default&ordenado-por=&adfilter_onlyflats=&adfilter_penthouse=&adfilter_duplex=&adfilter_homes=&adfilter_independent=&adfilter_semidetached=&adfilter_terraced=&adfilter_countryhouses=&adfilter_chalets=&device=mobile'
+        #Construimos la url y los headers
+        url = self.build_url(filters)
+        headers = self.build_headers()
+        
+        # Realizar la solicitud GET
+        """
+        response = requests.get(url, headers=headers)
 
-        # Headers de la solicitud
+        #Obtenemos la info de los pisos y decodificamos la informacion a utf-8
+        content = response.content
+        decode_content = content.decode("utf-8")
+
+        #Mapeamos a json la respuesta
+        json_response = json.loads(decode_content.strip())
+
+        #Obtenemos la parte que nos hace falta
+        html_content = json_response["plainText"]
+
+        # Open the file in read mode ('r')
+        """
+        with open("../idealista.html", 'r') as file:
+                # Read the entire file content
+                html_content = file.read()
+
+        
+
+        #Scrapeamos el contenido html
+        soup = BeautifulSoup(html.unescape(html_content), "lxml")
+        article_elements = soup.find_all("article", class_="item-multimedia-container")
+
+        flat_list = []
+
+        #Obtenemos objetos flat del html
+        for article in article_elements:
+             flat_list.append(self.retrieve_elements(article))
+             
+        
+        return flat_list
+    
+    def retrieve_elements(self, html_element):
+        flat = Flat()
+
+        flat.origin = "IDEALISTA"
+        flat.name = html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get_text().strip()
+
+        price = html_element.find("span", class_="item-price").get_text(strip=True)
+        flat.price = re.search(r'\d+', price.replace('.', '')).group()
+        
+        rooms = html_element.find("div", class_="item-detail-char").find_next("span").get_text(strip=True)
+        flat.rooms = re.search(r'\d+', rooms).group()
+
+        description = html_element.find("div", class_="item-description description").find_next("p").get_text().strip().replace('\n', '')
+        flat.description = re.sub(r'\s+', ' ', description).strip() #quitamos espacios en blanco entre palabras
+
+        flat.address = "No se especifica"
+        flat.phone_number = "No se especifica"
+        flat.original_link = "https://www.idealista.com" + html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get("href")
+        flat.image_link = html_element.find("img").get("src")
+        #{{ url_for('static',filename='resources/image-not-found.png') }}
+
+        return flat
+
+    def build_url(self, filters):
+
+        province = filters["province"] #valor por defecto es 'malaga'
+        municipality = filters["municipality"] #valor por defecto es 'fuengirola'
+        min_price = filters["min_price"] #valor por defecto es '100'
+        max_price = filters["max_price"] #valor por defecto es '900'
+        room_numbers = filters["room_numbers"] 
+
+        # URL de la solicitud
+        #url = f'https://www.idealista.com/ajax/listingcontroller/listingajax.ajax?locationUri=fuengirola-malaga&typology=1&operation=2&freeText=&adfilter_pricemin=default&adfilter_price={max_price}&adfilter_area=default&adfilter_areamax=default&adfilter_amenity=default&adfilter_apartment=&adfilter_rooms_0=&adfilter_rooms_1=&adfilter_rooms_2=2&adfilter_rooms_3=3&adfilter_rooms_4_more=4&adfilter_baths_1=&adfilter_baths_2=&adfilter_baths_3=&adfilter_newconstruction=&adfilter_goodcondition=&adfilter_toberestored=&adfilter_housingpetsallowed=&adfilter_hasairconditioning=&adfilter_wardrobes=&adfilter_lift=&adfilter_flatlocation=&adfilter_parkingspace=&adfilter_garden=&adfilter_swimmingpool=&adfilter_hasterrace=&adfilter_boxroom=&adfilter_accessibleHousing=&adfilter_seaviews=&adfilter_luxury=&adfilter_top_floor=&adfilter_intermediate_floor=&adfilter_ground_floor=&adfilter_hasplan=&adfilter_digitalvisit=&adfilter_agencyisabank=&adfilter_published=default&ordenado-por=&adfilter_onlyflats=&adfilter_penthouse=&adfilter_duplex=&adfilter_homes=&adfilter_independent=&adfilter_semidetached=&adfilter_terraced=&adfilter_countryhouses=&adfilter_chalets=&device=mobile'
+        # Base URL
+        base_url = 'https://www.idealista.com/ajax/listingcontroller/listingajax.ajax'
+
+        # Parámetros dinámicos
+        params = {
+            'locationUri': f'{municipality.lower()}-{province.lower()}',
+            'typology': '1',
+            'operation': '2',
+            'freeText': '',
+            'adfilter_pricemin': min_price,
+            'adfilter_price': max_price,  # Ejemplo de parámetro dinámico
+            'adfilter_area': 'default',
+            'adfilter_areamax': 'default',
+            'adfilter_amenity': 'default',
+            'adfilter_apartment': '',
+            'adfilter_rooms_0': '',
+            'adfilter_rooms_1': set_room_number_to_one(room_numbers),
+            'adfilter_rooms_2': set_room_number_to_two(room_numbers),
+            'adfilter_rooms_3': set_room_number_to_three(room_numbers),
+            'adfilter_rooms_4_more': set_room_number_to_four(room_numbers),
+            'adfilter_baths_1': '',
+            'adfilter_baths_2': '',
+            'adfilter_baths_3': '',
+            'adfilter_newconstruction': '',
+            'adfilter_goodcondition': '',
+            'adfilter_toberestored': '',
+            'adfilter_housingpetsallowed': '',
+            'adfilter_hasairconditioning': '',
+            'adfilter_wardrobes': '',
+            'adfilter_lift': '',
+            'adfilter_flatlocation': '',
+            'adfilter_parkingspace': '',
+            'adfilter_garden': '',
+            'adfilter_swimmingpool': '',
+            'adfilter_hasterrace': '',
+            'adfilter_boxroom': '',
+            'adfilter_accessibleHousing': '',
+            'adfilter_seaviews': '',
+            'adfilter_luxury': '',
+            'adfilter_top_floor': '',
+            'adfilter_intermediate_floor': '',
+            'adfilter_ground_floor': '',
+            'adfilter_hasplan': '',
+            'adfilter_digitalvisit': '',
+            'adfilter_agencyisabank': '',
+            'adfilter_published': 'default',
+            'ordenado-por': '',
+            'adfilter_onlyflats': '',
+            'adfilter_penthouse': '',
+            'adfilter_duplex': '',
+            'adfilter_homes': '',
+            'adfilter_independent': '',
+            'adfilter_semidetached': '',
+            'adfilter_terraced': '',
+            'adfilter_countryhouses': '',
+            'adfilter_chalets': '',
+            'device': 'mobile'
+        }
+
+        # Convertir parámetros a cadena de consulta
+        query_string = urlencode(params, doseq=True)
+
+        # Construir la URL completa
+        url = f"{base_url}?{query_string}"
+        return  url
+    
+    def build_headers(self):
+         # Headers de la solicitud
         headers = {
             'accept': 'application/json, text/javascript, */*; q=0.01',
             'accept-language': 'es-BO,es-419;q=0.9,es;q=0.8,en;q=0.7',
@@ -39,53 +175,31 @@ class Idealista(ScrapyBase):
             'x-requested-with': 'XMLHttpRequest'
         }
 
-        # Realizar la solicitud GET
-        response = requests.get(url, headers=headers)
-
-        #Obtenemos la info de los pisos y decodificamos la informacion a utf-8
-        content = response.content
-        decode_content = content.decode("utf-8")
-
-        #Mapeamos a json la respuesta
-        json_response = json.loads(decode_content.strip())
-
-        #Obtenemos la parte que nos hace falta
-        html_content = json_response["plainText"]
-        
-        # Open the file in read mode ('r')
-        """
-        with open("../idealista.html", 'r') as file:
-                # Read the entire file content
-                html_content = file.read()
-        """
-
-        #Scrapeamos el contenido html
-        soup = BeautifulSoup(html.unescape(html_content), "lxml")
-        article_elements = soup.find_all("article", class_="item-multimedia-container")
-
-        flat_list = []
-
-        #Obtenemos objetos flat del html
-        for article in article_elements:
-             flat_list.append(self.retrieve_elements(article))
-        
-        return flat_list
+        return headers
     
-    def retrieve_elements(self, html_element):
-        flat = Flat("", "", "", "", "", "", "", "")
-        flat.origin = "IDEALISTA"
-        flat.name = html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get_text().strip()
-        
-        price = html_element.find("span", class_="item-price").get_text(strip=True)
-        flat.price = re.search(r'\d+', price).group()
-        
-        description = html_element.find("div", class_="item-description description").find_next("p").get_text().strip().replace('\n', '')
-        flat.description = re.sub(r'\s+', ' ', description).strip() #quitamos espacios en blanco entre palabras
+def set_room_number_to_one(value):
+    if value == '1' :
+        return '1'
+    
+    return ''
 
-        flat.address = ""
-        flat.phone_number = ""
-        flat.original_link = "https://www.idealista.com" + html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get("href")
-        flat.image_link = html_element.find("img").get("src")
-        #{{ url_for('static',filename='resources/image-not-found.png') }}
+def set_room_number_to_two(value):
+    if value == '1' or value == '2':
+        return '2'
+    
+    return ''
 
-        return flat
+def set_room_number_to_three(value):
+    if value == '1' or value == '2' or value == '3':
+        return '3'
+    
+    return ''
+
+def set_room_number_to_four(value):
+    if value == '1' or value == '2' or value == '3' or value == '4':
+        return '4'
+    
+    if int(value) >= 4:
+        return '4'
+    
+    return ''

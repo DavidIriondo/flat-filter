@@ -1,16 +1,16 @@
 class Flat:
-
-    def __init__(self,origin, name, address, price, phone_number, description, original_link, image_link):
-        self.origin = origin
-        self.name = name
-        self.address = address
-        self.price = price
-        self.phone_number= phone_number
-        self.description = description
-        self.original_link= original_link
-        self.image_link= image_link
+    origin = ''
+    name = ''
+    address = ''
+    rooms = ''
+    price = ''
+    phone_number= ''
+    description = ''
+    original_link= ''
+    image_link= ''
 
     def format(self):
+        
         if self.origin == "":
             pass
 
