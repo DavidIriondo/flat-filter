@@ -12,15 +12,16 @@ from dtos.flat import Flat
 
 class Idealista(ScrapyBase):
 
-    def start_scrapy_process(self, filters, rules):
+    def start_scrapy_process(self, rules, filters):
         print("Iniciando proceso de scrapy para Idealista")
 
         #Construimos la url y los headers
         url = self.build_url(filters)
         headers = self.build_headers()
+        flat_list = []
+        invalid_flat_list = []
         
         # Realizar la solicitud GET
-        """
         response = requests.get(url, headers=headers)
 
         #Obtenemos la info de los pisos y decodificamos la informacion a utf-8
@@ -33,48 +34,75 @@ class Idealista(ScrapyBase):
         #Obtenemos la parte que nos hace falta
         html_content = json_response["plainText"]
 
-        # Open the file in read mode ('r')
         """
-        with open("../idealista.html", 'r') as file:
+        # Open the file in read mode ('r')
+        with open("../idealista.html", 'r', encoding='utf-8') as file:
                 # Read the entire file content
                 html_content = file.read()
-
-        
-
+        """
         #Scrapeamos el contenido html
         soup = BeautifulSoup(html.unescape(html_content), "lxml")
         article_elements = soup.find_all("article", class_="item-multimedia-container")
 
-        flat_list = []
-
         #Obtenemos objetos flat del html
+        """
+        #Sin aplicar las reglas
         for article in article_elements:
              flat_list.append(self.retrieve_elements(article))
+        """
+
+        #Aplicando las reglas
+        for article in article_elements:
+            flat = self.retrieve_elements(article)
+            #Solo si el contenido cumple las reglas se añade a la lista final
+            if self.apply_rules(rules, flat):
+                flat_list.append(flat)
+            else:
+                invalid_flat_list.append(flat)
              
-        
         return flat_list
     
     def retrieve_elements(self, html_element):
         flat = Flat()
-
-        flat.origin = "IDEALISTA"
-        flat.name = html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get_text().strip()
-
-        price = html_element.find("span", class_="item-price").get_text(strip=True)
-        flat.price = re.search(r'\d+', price.replace('.', '')).group()
+    
+        # Valor predeterminado para los campos en caso de excepción
+        default_value = "No especificado"
         
-        rooms = html_element.find("div", class_="item-detail-char").find_next("span").get_text(strip=True)
-        flat.rooms = re.search(r'\d+', rooms).group()
-
-        description = html_element.find("div", class_="item-description description").find_next("p").get_text().strip().replace('\n', '')
-        flat.description = re.sub(r'\s+', ' ', description).strip() #quitamos espacios en blanco entre palabras
-
-        flat.address = "No se especifica"
-        flat.phone_number = "No se especifica"
-        flat.original_link = "https://www.idealista.com" + html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get("href")
-        flat.image_link = html_element.find("img").get("src")
-        #{{ url_for('static',filename='resources/image-not-found.png') }}
-
+        flat.origin = "Idealista"
+        
+        try:
+            price = html_element.find("span", class_="item-price").get_text(strip=True)
+            flat.price = re.search(r'\d+', price.replace('.', '')).group()
+        except:
+            flat.price = default_value
+        
+        try:
+            rooms = html_element.find("div", class_="item-detail-char").find_next("span").get_text(strip=True)
+            flat.rooms = re.search(r'\d+', rooms).group()
+        except:
+            flat.rooms = default_value
+        
+        try:
+            description = html_element.find("div", class_="item-description description").find_next("p").get_text().strip().replace('\n', '')
+            flat.description = re.sub(r'\s+', ' ', description).strip()  # Quitamos espacios en blanco entre palabras
+        except:
+            flat.description = default_value
+        
+        try:
+            flat.address = html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get_text().strip()
+        except:
+            flat.address = default_value
+        
+        try:
+            flat.original_link = "https://www.idealista.com" + html_element.find("div", class_="item-info-container").find_next("a", class_="item-link").get("href")
+        except:
+            flat.original_link = default_value
+        
+        try:
+            flat.image_link = html_element.find("img").get("src")
+        except:
+            flat.image_link = default_value
+        
         return flat
 
     def build_url(self, filters):
