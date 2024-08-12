@@ -22,10 +22,10 @@
            </div>
         </div>
 
-        <!--Contiene el mensaje warning-->
+        <!--Contiene el mensaje recordatorio-->
         <div class="px-lg-6">
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <h4 class="alert-heading">Recordatorio</h4>
+                <h4 class="alert-heading">Nota</h4>
                 <p>
                     Por defecto se aplicara la busqueda de pisos en Fuengirola-Malaga, con un precio maximo de 900€ y un minimo de 2 habitaciones.<br>
                     La funcion de filtrar por <strong>provincia-municipio</strong> todavia no aplica a todas las paginas.
@@ -33,6 +33,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
         </div>
+        <!--Lista de palabras clave-->
         <div class="px-lg-6">
             <div class="accordion" id="accordionExample">
                 <div class="accordion-item">
@@ -66,7 +67,7 @@
                 </div>
             </div>
             {% endfor %}
-    </div>
+        </div>
 
     <!-- Modal -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

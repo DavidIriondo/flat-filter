@@ -23,11 +23,16 @@ class ScrapyBase(ABC):
     def apply_rules(self, rules, flat):
         """Metodo booleano que filtra los pisos en funcion de si pasan o no las reglas de validacion.
         En este caso las relgas son palabras concretas que los pisos no deben tener para considerarse validos"""
+
         text = flat.description.lower()
 
         for rule in rules:
-            
-            if re.search(r"\b" + re.escape(rule.lower()) + r"\b", text):
+
+            if rule.search(text):
+                #print("El texto contiene la palabra clave: " + str(r))
                 return False
+            else:
+                pass
+                #print("El texto no contiene la palabra clave: " + str(r))
 
         return True

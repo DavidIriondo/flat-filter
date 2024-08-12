@@ -42,12 +42,11 @@ class ScrapyManager(Singleton):
     def add_web_component(self, component):
         self.webComponents.append(component)
 
-
     def start_process(self, rules = [], filters = DEFAULT_FORM):
         """Si no se pasan los filtros se crea un filtro por defecto"""
 
         self.clear_flatList()
 
-
         for component in self.webComponents:
             self.flatList.extend(component.start_scrapy_process(rules, filters))
+
