@@ -13,7 +13,6 @@ from dtos.flat import Flat
 class Idealista(ScrapyBase):
 
     def start_scrapy_process(self, rules, filters):
-        print("Iniciando proceso de scrapy para Idealista")
 
         #Construimos la url y los headers
         url = self.build_url(filters)

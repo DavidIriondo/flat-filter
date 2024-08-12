@@ -1,7 +1,8 @@
 import secrets
 import re
 
-from flask import Flask, render_template, redirect, request, url_for
+from flask import Flask, render_template, redirect, request, url_for, abort
+
 from services.scrapy_manager import ScrapyManager
 from forms.flat_form import FilterForm
 from services.scrapy_modules.foto_casa_module import FotoCasa
@@ -30,11 +31,12 @@ for r in rules.values():
     compiled_rules.append(re.compile(lower_case_regex))
 
 
+#Pagina principal
 @app.route("/api/v1/flat/main", methods=["GET", "POST"])
 def main_page():
     #Formulario que envia el usuario
     form = FilterForm()
-    
+
     #El usuario ha enviado el formulario y el metodo 
     if request.method == "POST" and form.validate():
 
@@ -59,5 +61,26 @@ def main_page():
     return render_template("index.html", flat_list = flat_list,  form=form, key_words=key_words)
 
 
+
+
+#Paginas de errores
+@app.errorhandler(404)
+def page_not_found(error):
+    # Redirige a una página de error personalizada
+    return render_template("error/error.html", code=404, description="Page not found"), 404
+
+#Paginas de errores
+@app.errorhandler(400)
+def bad_request(error):
+    # Redirige a una página de error personalizada
+    return render_template("error/error.html", code=400, description="Bad Request"), 400
+
+@app.errorhandler(500) 
+def internal_server_error(error):
+    # Redirige a una página de error personalizada
+    return render_template("error/error.html", code=500, description="Internal Server Error"), 500
+
+
+#Punto de entrada
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
