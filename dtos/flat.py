@@ -21,4 +21,3 @@ class Flat:
             f"Link: {self.original_link}\n"
             f"Image: {self.image_link} ]"
         )
-        #return f"[Name:{self.name},Address:{self.address}, Price:{self.price}, Phone number:{self.phone_number}, Description:{self.description}, Link:{self.original_link}, Image:{self.image_link}]"
