@@ -21,7 +21,6 @@ class Idealista(ScrapyBase):
         invalid_flat_list = []
         
         # Realizar la solicitud GET
-        """
         response = requests.get(url, headers=headers)
 
         #Obtenemos la info de los pisos y decodificamos la informacion a utf-8
@@ -33,17 +32,17 @@ class Idealista(ScrapyBase):
 
         #Obtenemos la parte que nos hace falta
         html_content = json_response["plainText"]
-        """
         
+        """
         # Open the file in read mode ('r')
         with open("../idealista.html", 'r', encoding='utf-8') as file:
                 # Read the entire file content
                 html_content = file.read()
-        
+        """
         #Scrapeamos el contenido html
         soup = BeautifulSoup(html.unescape(html_content), "lxml")
         article_elements = soup.find_all("article", class_="item-multimedia-container")
-
+        
         #Obtenemos objetos flat del html
         """
         #Sin aplicar las reglas

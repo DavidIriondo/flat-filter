@@ -14,7 +14,8 @@ secret_key = secrets.token_hex(64)
 
 #Configuration app class
 app = Flask(__name__)
-app.config['SECRET_KEY'] = str(secret_key)
+#Solo es necesario para acciones que modifiquen el estado del servidor
+app.config['SECRET_KEY'] = str(secret_key) 
 
 #Scrapy manager para orquestar los componentes web
 scrapy_manger = ScrapyManager()
@@ -31,57 +32,6 @@ for r in rules.values():
     lower_case_regex = r.lower()
     compiled_rules.append(re.compile(lower_case_regex))
 
-
-mock_list = []
-for i in range(1, 91):
-    flat = Flat()
-    flat.address = f"Address: {i}"
-    flat.description = "This is an example of a short text description"
-    flat.price = "800"
-    flat.rooms = "2"
-    flat.origin = "Example"
-    mock_list.append(flat)
-    
-
-#Pagina principal
-@app.route("/api/v1/flat/main", methods=["GET", "POST"])
-def main_page():
-    #Formulario que envia el usuario
-    form = FilterForm()
-
-    #El usuario ha enviado el formulario y el metodo 
-    if request.method == "POST" and form.validate():
-
-        form_fields={
-            "province": form.province.data,
-            "municipality": form.municipality.data,
-            "min_price": form.min_price.data,
-            "max_price": form.max_price.data,
-            "room_numbers": form.room_numbers.data
-            }
-        
-        #Aplicamos el filtro seleccionado y las reglas de matcheo
-        #scrapy_manger.start_process(compiled_rules, form_fields)
-        flat_list = scrapy_manger.get_flatList()
-
-        return render_template("index.html", flat_list = mock_list,  form=form, key_words= key_words)
-        
-    #Al realizar la peticion GET usamos el filtro por defecto y usamos las reglas de matcheo
-    #scrapy_manger.start_process(compiled_rules)
-    flat_list = scrapy_manger.get_flatList()
-
-    page = request.args.get('page', 1, type=int)
-    per_page = 10
-    start = (page - 1) * per_page
-    end = start + per_page
-    total_pages = (len(mock_list) + per_page - 1) // per_page
-
-    items_on_page = mock_list[start:end]
-
-    return render_template("index.html", flat_list = mock_list,  form=form, key_words=key_words, 
-                           items_on_page = items_on_page, total_pages = total_pages, page = page)
-
-"""
 #Pagina principal
 @app.route("/api/v1/flat/main", methods=["GET", "POST"])
 def main_page():
@@ -110,7 +60,6 @@ def main_page():
     flat_list = scrapy_manger.get_flatList()
 
     return render_template("index.html", flat_list = flat_list,  form=form, key_words=key_words)
-"""
 
 
 #-------------Paginas de errores-----------

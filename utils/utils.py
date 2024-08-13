@@ -39,7 +39,7 @@ def get_regex_rules():
         "no se alquila larga temporada" : "no se alquila larga temporada",
         "solo en el los meses de invierno" : "solo en el los meses de invierno",
         "solo para profesores" : "solo para profesores",
-        "de septiembre a julio" : rf"de\s*{format_months_for_regex()}\s*a\s*{format_months_for_regex()}", 
+        "de septiembre a julio" : rf"de\s*{format_months_for_regex()}\s*(a|hasta|hasta fin de)\s*{format_months_for_regex()}", 
         "15 de Septiembre a 30  de Julio" : rf"[0-9]+\s*(|de)\s*{format_months_for_regex()}\s*(|a|al)\s*[0-9]+\s*(|de)\s*{format_months_for_regex()}", 
         "desde septiembre 2024 a junio 2025" : rf"{format_months_for_regex()}\s*[0-9]{{4}}\s*(a|al|hasta)\s*{format_months_for_regex()}\s*[0-9]{{4}}",
         "temporada septiembre a enero" : rf"temporada\s*{format_months_for_regex()}\s*a\s*{format_months_for_regex()}",
