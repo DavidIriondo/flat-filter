@@ -76,4 +76,4 @@ def internal_server_error(error):
 
 #Punto de entrada
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
