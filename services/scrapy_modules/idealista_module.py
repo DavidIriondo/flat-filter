@@ -20,6 +20,7 @@ class Idealista(ScrapyBase):
         flat_list = []
         invalid_flat_list = []
         
+        
         # Realizar la solicitud GET
         response = requests.get(url, headers=headers)
 

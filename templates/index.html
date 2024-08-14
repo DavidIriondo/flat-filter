@@ -16,12 +16,12 @@
 <body >
     <div class="container-fluid">
         <!--Nav bar-->
-        <div class="index-navbar row bg-primary px-lg-6">
+        <div class="index-navbar row blue-bg px-lg-6">
            <div class="col d-flex justify-content-between text-light">
                 <h5 class="align-self-center m-0">Flat Filter</h5>
                 <!-- Button trigger modal -->
-                <button type="button" class="btn btn-primary pb-0" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                    <h3><i class="bi bi-filter"></i></h3>
+                <button type="button" class="btn-blue" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                    <i class="bi bi-filter white-color"></i>
                 </button>
            </div>
         </div>
@@ -74,7 +74,7 @@
             {% endfor %}
         </div>
 
-    <!-- Modal -->
+    <!-- Modal con el formulario-->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -84,7 +84,7 @@
             </div>
             <div class="modal-body">
                 <!--Filtro de busqueda-->
-                <form class="row g-3" action="{{ url_for('main_page') }}" method="post" id="flat-form">
+                <form class="row g-3" action="{{ url_for('main_page') }}" method="get" id="flat-form">
                     {{ form.hidden_tag() }}
                    <div class="col-12">
                         <label for="province" class="form-label">Provincia</label>
@@ -110,7 +110,7 @@
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-            <input type="submit" form="flat-form" value="Filtrar" class="btn btn-primary"></input>
+            <input type="submit" form="flat-form" value="Filtrar" class="btn btn-primary" style="background-color: var(--blue); border: 1px solid var(--blue)"></input>
         </div>
         </div>
         </div>

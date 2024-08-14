@@ -25,7 +25,6 @@ class FotoCasa(ScrapyBase):
             json_content = file.read()
             real_states = json.loads(json_content)
         """
-        
         #Obtenemos la informacion del json
         json_flat_list = real_states["realEstates"]
         
