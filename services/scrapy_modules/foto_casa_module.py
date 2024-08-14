@@ -15,17 +15,16 @@ class FotoCasa(ScrapyBase):
         flat_list = []
         invalid_flat_list = []
         
-        """
         response = requests.get(url, headers=headers)
         real_states = response.json()
+        
         """
-
         #Leemos de un archivo local
         with open("../fotocasa.json", 'r', encoding='utf-8') as file:
             # Read the entire file content
             json_content = file.read()
             real_states = json.loads(json_content)
-        
+        """
         #Obtenemos la informacion del json
         json_flat_list = real_states["realEstates"]
         
