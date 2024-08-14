@@ -1,7 +1,28 @@
 /*Global variables*/
 :root {
-    --blue: #007bff;
+    --blue: #2455f3;
     --white: #ffffff;
+}
+
+
+.white-color{
+    color: var(--white);
+}
+
+.blue-bg{
+    background-color: var(--blue);
+}
+
+.btn-blue{
+    color: var(--white);
+    background-color: var(--blue);
+    border: 1px solid var(--blue);
+    padding: 5px 20px;
+    cursor: pointer;
+    font-size: 3.5ch;
+}
+.btn-blue:hover{
+    background-color: #233058;
 }
 
 

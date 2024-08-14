@@ -11,15 +11,6 @@ class Singleton:
 
 class ScrapyManager(Singleton):
 
-    #Valores del filtro por defecto se usa cuando se llama a la pagina sin usar el metodo POST
-    DEFAULT_FORM = {
-        "province": "malaga",
-        "municipality": "fuengirola",
-        "min_price": "100",
-        "max_price": "900",
-        "room_numbers": "2"
-        }
-    
     def __init__(self, ):
         if not hasattr(self, 'initialized'):
             self.flatList = []
@@ -42,7 +33,7 @@ class ScrapyManager(Singleton):
     def add_web_component(self, component):
         self.webComponents.append(component)
 
-    def start_process(self, rules = [], filters = DEFAULT_FORM):
+    def start_process(self, rules, filters):
         """Si no se pasan los filtros se crea un filtro por defecto"""
 
         self.clear_flatList()
